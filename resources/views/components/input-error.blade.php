@@ -1,0 +1,1 @@
+@props(['messages'])@if($messages)<ul {{ $attributes->merge(['style'=>'color:#b42318;font-size:13px;padding:0;list-style:none']) }}>@foreach((array)$messages as $message)<li>{{ $message }}</li>@endforeach</ul>@endif

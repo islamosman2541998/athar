@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'brand' => 'Athar',
+    'tagline' => 'We create your digital impact',
+    'nav' => ['home'=>'Home','services'=>'Services','work'=>'Work','blog'=>'Insights','about'=>'About','contact'=>'Contact','jobs'=>'Careers','profile'=>'Profile'],
+    'request' => 'Request a service', 'start' => 'Start your project', 'more' => 'Learn more', 'all' => 'View all', 'previous' => 'Previous', 'next' => 'Next',
+    'pagination' => ['label'=>'Pagination','page'=>'Page :page','summary'=>'Showing :from - :to of :total'],
+    'home' => [
+        'kicker'=>'Creative thinking. Real growth.', 'title'=>'We create your digital <em>impact</em>',
+        'intro'=>'Your partner in building a meaningful digital presence. We craft strategies and creative experiences that connect with customers and drive sustainable growth.',
+        'services_title'=>'Integrated digital impact for your growth','services_copy'=>'From idea to launch, we create focused impact that makes a measurable difference.',
+        'work_title'=>'Selected success stories','why'=>'Your partner for a bigger future','why_copy'=>'Every brand has a distinct story. We turn that story into an influential digital presence and measurable results.',
+        'blogs_title'=>'Latest insights','process_title'=>'From idea to impact','process_copy'=>'A clear, flexible process that takes your project from understanding the goal to continuous results.',
+        'all_services'=>'All services','all_work'=>'All work','all_articles'=>'All articles',
+        'why_features'=>['Strategic insight','Specialized team','Boundless creativity','Results-driven delivery'],
+        'stats_kicker'=>'Measurable results','stats_title'=>'Numbers that show our impact',
+        'partners_kicker'=>'Our partners','partners_title'=>'Partners in success',
+    ],
+    'services' => ['title'=>'Our services','kicker'=>'Digital impact that lasts','intro'=>'A connected set of digital services designed to help your business grow and stand out.','empty'=>'Services will be added soon.'],
+    'portfolio' => ['title'=>'Our work','kicker'=>'Digital ideas that make a difference','intro'=>'Projects delivered with care and expertise to create real impact.','empty'=>'Work samples will be added soon.'],
+    'about' => ['title'=>'About us','kicker'=>'Real stories, meaningful digital impact','story'=>'From an idea to real impact','vision'=>'Our vision','mission'=>'Our mission','values'=>'The principles that guide us'],
+    'blog' => ['title'=>'Insights','kicker'=>'Ideas for a stronger digital presence','intro'=>'Practical expertise and trends that help you understand the digital world and grow your business.','empty'=>'New articles are coming soon.','related'=>'Related articles'],
+    'contact' => ['title'=>'Contact us','kicker'=>'Always here to help','intro'=>'Tell us about your idea or question and our team will get back to you shortly.','form'=>'Send us a message','name'=>'Full name','company'=>'Company name','email'=>'Email address','phone'=>'Phone number','subject'=>'Subject','message'=>'Your message','send'=>'Send message','hours'=>'Working hours','location'=>'Our main office'],
+    'form' => ['title'=>'Your project details','intro'=>'Tell us what you need and we will recommend the right approach.','service'=>'Required service','timeline'=>'Timeline','attachment'=>'Attach a file','submit'=>'Send request','success'=>'Your request was received. We will contact you shortly.'],
+    'faq' => ['title'=>'Frequently asked questions','intro'=>'Quick answers to common questions.'],
+    'jobs' => ['title'=>'Join our team','intro'=>'We are always looking for talent that creates meaningful impact.','apply'=>'Apply now','empty'=>'There are no open roles right now.'],
+    'footer' => ['about'=>'We turn ideas into digital experiences with real, lasting impact.','links'=>'Quick links','services'=>'Services','contact'=>'Contact','rights'=>'All rights reserved.'],
+    'products' => ['title'=>'Our impact'],
+    'stats' => ['clients'=>'Happy clients','projects'=>'Projects delivered','years'=>'Years of experience','satisfaction'=>'Client satisfaction'],
+    'steps' => ['Understand the goal','Build the strategy','Create with purpose','Measure and improve'],
+    'fallback' => ['service'=>'Integrated digital impact','service_copy'=>'A carefully designed service that supports your brand growth and business goals.','portfolio'=>'Featured digital project','blog'=>'A fresh digital marketing perspective'],
+];

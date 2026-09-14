@@ -1,0 +1,27 @@
+<?php
+return [
+    'order_complete_title'    => 'Order Complete!',
+    'thank_you'               => 'Thank you for your purchase. Your order has been successfully placed.',
+    'order_summary'           => 'Order Summary',
+    'confirmed'               => 'Confirmed',
+    'order_number'            => 'Order Number:',
+    'total_amount'            => 'Total Amount:',
+    'estimated_delivery'      => 'Estimated Delivery:',
+    'items_ordered'           => 'Items Ordered',
+    'continue_shopping'       => 'Continue Shopping',
+    'track_order'             => 'Track Your Order',
+    'need_help'               => 'Need help? Contact our support team at :email',
+    'get_special_discount'    => 'Get special discount now!',
+    'order_date'              => 'Order Date:',
+    'customer_mobile'         => 'Customer Mobile:',
+    'address'                 => 'Address',
+    'thank_you_for_shopping'  => 'Thank you for shopping with us',
+    'shipped_price'           => 'Shipped Price:',
+    'discount'                => 'Discount:',
+    'total'                   => 'Total:',
+    'subtotal'                => 'Subtotal:',
+    'print_invoice'           => 'Print Invoice',
+    'payment_method'          => 'Payment Method',
+    'payment_image'          => 'Payment Image',
+
+];

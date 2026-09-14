@@ -1,0 +1,1 @@
+<div style="width:min(100%,440px);margin:auto;background:#fff;color:#102b27;border-radius:20px;padding:32px;box-shadow:0 22px 65px rgba(0,0,0,.2)"><div style="display:flex;justify-content:center;margin-bottom:24px">{{ $logo }}</div>{{ $slot }}</div>

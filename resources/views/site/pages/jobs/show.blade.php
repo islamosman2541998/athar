@@ -1,0 +1,7 @@
+@extends('site.layouts.app')
+@php($trans=$job->transNow)
+@section('title', $trans->title ?? __('athar.jobs.title'))
+@section('content')
+@include('site.includes.page-hero',['title'=>$trans->title ?? __('athar.jobs.title'),'kicker'=>$job->employment_type,'intro'=>$job->location])
+<section class="section"><div class="container split"><article class="article-main"><div class="rich-text">{!! $trans->job_desc ?? $trans->description ?? '' !!}</div>@if($trans->requirements)<h2>{{ app()->getLocale()==='ar'?'المتطلبات':'Requirements' }}</h2><div class="rich-text">{!! $trans->requirements !!}</div>@endif</article><div class="form-card"><h2>{{ __('athar.jobs.apply') }}</h2>@if(session('success'))<div class="alert alert--success">{{ session('success') }}</div>@endif @if($errors->any())<div class="alert alert--error">{{ $errors->first() }}</div>@endif<form method="post" enctype="multipart/form-data" action="{{ route('site.jobs.apply',$trans->slug) }}" class="form-grid">@csrf<div class="field field--wide"><label>{{ __('athar.contact.name') }}</label><input name="name" required></div><div class="field field--wide"><label>{{ __('athar.contact.email') }}</label><input type="email" name="email" required></div><div class="field field--wide"><label>{{ __('athar.contact.phone') }}</label><input name="phone" required></div><div class="field field--wide"><label>CV</label><input type="file" name="cv" accept=".pdf,.doc,.docx" required></div><button class="btn btn--green btn--block field--wide">{{ __('athar.jobs.apply') }}</button></form></div></div></section>
+@endsection
