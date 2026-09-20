@@ -2,8 +2,8 @@
 @php($trans=$about?->transNow)
 @section('title', $trans->title ?? __('athar.about.title'))
 @section('content')
-@include('site.includes.page-hero',['title'=>__('athar.about.title'),'kicker'=>__('athar.about.kicker'),'intro'=>strip_tags($trans->sub_description ?? __('athar.home.why_copy')),'image'=>asset('site/images/athar-team.png')])
-<section class="section"><div class="container split"><div class="feature-copy" data-reveal><span class="eyebrow">{{ __('athar.about.story') }}</span><h2>{{ $trans->our_story_title ?? $trans->subtitle ?? __('athar.home.why') }}</h2><div class="rich-text">{!! $trans->our_story_description ?? $trans->description ?? __('athar.home.why_copy') !!}</div></div><div class="feature-image" data-reveal><img src="{{ asset($about?->imageInView() ?? 'site/images/athar-devices.png') }}" alt="{{ $trans->title ?? __('athar.about.title') }}"></div></div></section>
+@include('site.includes.page-hero',['title'=>__('athar.about.title'),'kicker'=>__('athar.about.kicker'),'intro'=>strip_tags($trans->sub_description ?? __('athar.home.why_copy')),'image'=>media_asset('site/images/athar-team.png')])
+<section class="section"><div class="container split"><div class="feature-copy" data-reveal><span class="eyebrow">{{ __('athar.about.story') }}</span><h2>{{ $trans->our_story_title ?? $trans->subtitle ?? __('athar.home.why') }}</h2><div class="rich-text">{!! $trans->our_story_description ?? $trans->description ?? __('athar.home.why_copy') !!}</div></div><div class="feature-image" data-reveal><img src="{{ media_asset($about?->imageInView() ?? 'site/images/athar-devices.png') }}" alt="{{ $trans->title ?? __('athar.about.title') }}"></div></div></section>
 <section class="section section--dark about-pillars-section">
     <div class="container">
         <div class="about-pillars">

@@ -22,7 +22,36 @@ trait FileHandler
     public function upload_file($file, $path = '', $key = "")
     {
         $imageName = time() . $key . '.' . $file->extension();
-        return "attachments" . "/" . $file->store($path, 'attachment');
+        $stored = "attachments" . "/" . $file->store($path, 'attachment');
+
+        // Also keep a WebP copy so the site can serve the lighter version (see media_asset()).
+        $this->make_webp_copy(public_path($stored));
+
+        return $stored;
+    }
+
+    /** Creates image.webp next to an uploaded jpg/png. Failures are ignored: the original still works. */
+    public function make_webp_copy(string $absolutePath): void
+    {
+        if (!preg_match('/\.(jpe?g|png)$/i', $absolutePath) || !is_file($absolutePath)) {
+            return;
+        }
+
+        try {
+            $target = preg_replace('/\.(jpe?g|png)$/i', '.webp', $absolutePath);
+            if (is_file($target)) {
+                return;
+            }
+
+            $manager = \Intervention\Image\ImageManager::usingDriver(\Intervention\Image\Drivers\Gd\Driver::class);
+            $image = $manager->decode($absolutePath);
+            if ($image->width() > 1600) {
+                $image->scale(width: 1600);
+            }
+            $image->encodeUsingFormat(\Intervention\Image\Format::WEBP, quality: 78)->save($target);
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 
 

@@ -15,7 +15,7 @@
                 @foreach(range(1, 9) as $item)
                     <article class="portfolio-showcase-card" data-reveal>
                         <span class="portfolio-card-detail">
-                            <img src="{{ asset('site/images/athar-devices.png') }}" alt="">
+                            <img src="{{ media_asset('site/images/athar-devices.png') }}" alt="">
                             <span class="portfolio-card-shade"></span>
                             <span class="portfolio-card-copy">
                                 <small>{{ __('athar.nav.work') }}</small>

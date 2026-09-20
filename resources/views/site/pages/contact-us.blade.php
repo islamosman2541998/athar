@@ -1,7 +1,7 @@
 @extends('site.layouts.app')
 @section('title', __('athar.contact.title'))
 @section('content')
-@include('site.includes.page-hero',['title'=>__('athar.contact.title'),'kicker'=>__('athar.contact.kicker'),'intro'=>__('athar.contact.intro'),'image'=>asset('site/images/athar-team.png')])
+@include('site.includes.page-hero',['title'=>__('athar.contact.title'),'kicker'=>__('athar.contact.kicker'),'intro'=>__('athar.contact.intro'),'image'=>media_asset('site/images/athar-team.png')])
 <section class="section"><div class="container split">
 <div class="form-card" data-reveal><h2>{{ __('athar.contact.form') }}</h2><p class="muted">{{ __('athar.contact.intro') }}</p>@if(session('success'))<div class="alert alert--success">{{ session('success') }}</div>@endif @if($errors->any())<div class="alert alert--error">{{ $errors->first() }}</div>@endif
 <form method="post" action="{{ route('site.contact.store') }}" class="form-grid">@csrf

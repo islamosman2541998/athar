@@ -19,7 +19,7 @@
                         @php($trans = $blog->transNow)
                         <div class="swiper-slide">
                             <article class="article-slide card">
-                                <img src="{{ $blog->pathInView() !== 'attachments/no_image/no_image.png' ? asset($blog->pathInView()) : asset('site/images/athar-devices.png') }}" alt="{{ $trans->title ?? __('athar.fallback.blog') }}" loading="lazy" draggable="false">
+                                <img src="{{ $blog->pathInView() !== 'attachments/no_image/no_image.png' ? media_asset($blog->pathInView()) : media_asset('site/images/athar-devices.png') }}" alt="{{ $trans->title ?? __('athar.fallback.blog') }}" loading="lazy" draggable="false">
                                 <div class="card-body">
                                     <span class="tag">{{ $blog->created_at?->format('Y.m.d') }}</span>
                                     <h3>{{ $trans->title ?? __('athar.fallback.blog') }}</h3>
@@ -32,7 +32,7 @@
                         @foreach(range(1, 3) as $i)
                             <div class="swiper-slide">
                                 <article class="article-slide card">
-                                    <img src="{{ asset('site/images/athar-devices.png') }}" alt="">
+                                    <img src="{{ media_asset('site/images/athar-devices.png') }}" alt="">
                                     <div class="card-body">
                                         <span class="tag">{{ __('athar.nav.blog') }}</span>
                                         <h3>{{ __('athar.fallback.blog') }}</h3>

@@ -38,14 +38,14 @@
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             referrerpolicy="strict-origin-when-cross-origin"></iframe>
                     @elseif($portfolio->type === 'video')
-                        <video controls playsinline preload="metadata" data-project-video data-src="{{ $frame(asset($mainMedia)) }}"></video>
+                        <video controls playsinline preload="metadata" data-project-video data-src="{{ $frame(media_asset($mainMedia)) }}"></video>
                     @elseif($portfolio->type === 'pdf')
                         <div class="project-document-stage">
                             <span>PDF</span><strong>{{ __('athar.media.main_document') }}</strong>
-                            <a class="btn btn--gold" href="{{ asset($mainMedia) }}" target="_blank" rel="noopener">{{ __('athar.media.open_file') }}</a>
+                            <a class="btn btn--gold" href="{{ media_asset($mainMedia) }}" target="_blank" rel="noopener">{{ __('athar.media.open_file') }}</a>
                         </div>
                     @else
-                        <img src="{{ asset($mainMedia) }}" alt="{{ $title }}" fetchpriority="high">
+                        <img src="{{ media_asset($mainMedia) }}" alt="{{ $title }}" fetchpriority="high">
                     @endif
                 </article>
 
@@ -80,9 +80,9 @@
                             <img src="{{ $portfolio->youtubeThumbnail('hqdefault') }}" alt="">
                             <span class="thumb-type">@include('site.includes.icon', ['name' => 'play', 'class' => ''])</span>
                         @elseif($portfolio->type === 'image')
-                            <img src="{{ asset($mainMedia) }}" alt="">
+                            <img src="{{ media_asset($mainMedia) }}" alt="">
                         @elseif($portfolio->type === 'video' && $hasMainMedia)
-                            <video src="{{ $frame(asset($mainMedia)) }}" muted playsinline preload="metadata" tabindex="-1" aria-hidden="true"></video>
+                            <video src="{{ $frame(media_asset($mainMedia)) }}" muted playsinline preload="metadata" tabindex="-1" aria-hidden="true"></video>
                             <span class="thumb-type">@include('site.includes.icon', ['name' => 'play', 'class' => ''])</span>
                         @else
                             <span class="thumb-placeholder">PDF</span>

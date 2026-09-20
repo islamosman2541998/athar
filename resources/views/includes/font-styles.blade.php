@@ -2,10 +2,13 @@
 @php
     $selectedFonts = \App\Support\FontOptions::selected();
     $fontStack = \App\Support\FontOptions::stack($selectedFonts);
+    $fontsUrl = \App\Support\FontOptions::stylesheetUrl($selectedFonts);
 @endphp
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="{{ \App\Support\FontOptions::stylesheetUrl($selectedFonts) }}">
+{{-- Loaded without blocking the first paint; the fallback stack shows immediately. --}}
+<link rel="stylesheet" href="{{ $fontsUrl }}" media="print" onload="this.media='all';this.onload=null">
+<noscript><link rel="stylesheet" href="{{ $fontsUrl }}"></noscript>
 <style>
     :root { --app-font: {!! $fontStack !!}; --bs-font-sans-serif: var(--app-font); --bs-body-font-family: var(--app-font); }
     @if(($scope ?? 'site') === 'admin')

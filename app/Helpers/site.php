@@ -38,3 +38,23 @@ if (!function_exists('getPages')) {
         return $pages ;
     }
 }
+
+if (!function_exists('media_asset')) {
+    /**
+     * Asset URL that prefers an existing .webp sibling (created by `php artisan images:webp`).
+     * Falls back to the original file when no WebP version exists.
+     */
+    function media_asset(?string $path, ?string $fallback = null): string
+    {
+        $path = ltrim((string) ($path ?: $fallback), '/');
+
+        if ($path !== '' && preg_match('/\.(jpe?g|png)$/i', $path)) {
+            $webp = preg_replace('/\.(jpe?g|png)$/i', '.webp', $path);
+            if (is_file(public_path($webp))) {
+                return asset($webp);
+            }
+        }
+
+        return asset($path);
+    }
+}

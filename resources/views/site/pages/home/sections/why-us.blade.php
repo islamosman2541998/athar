@@ -27,7 +27,7 @@
         </div>
 
         <div class="feature-image" data-reveal>
-            <img src="{{ asset('site/images/athar-team.png') }}" alt="{{ __('athar.about.title') }}" loading="lazy">
+            <img src="{{ media_asset('site/images/athar-team.png') }}" alt="{{ __('athar.about.title') }}" loading="lazy">
         </div>
     </div>
 </section>

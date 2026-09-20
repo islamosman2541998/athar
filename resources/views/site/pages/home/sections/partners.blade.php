@@ -17,12 +17,12 @@
                         @foreach($partners as $partner)
                             <div class="swiper-slide">
                                 @if($partner->url)
-                                    <a class="partner-card" href="{{ $partner->url }}" target="_blank" rel="noopener">
-                                        <img src="{{ asset($partner->pathInView()) }}" alt="{{ $partner->title ?? '' }}" loading="lazy" draggable="false">
+                                    <a class="partner-card" href="{{ $partner->url }}" target="_blank" rel="noopener" aria-label="{{ $partner->title ?: __('athar.home.partners_kicker') }}">
+                                        <img src="{{ media_asset($partner->pathInView()) }}" alt="{{ $partner->title ?? '' }}" loading="lazy" draggable="false">
                                     </a>
                                 @else
                                     <div class="partner-card">
-                                        <img src="{{ asset($partner->pathInView()) }}" alt="{{ $partner->title ?? '' }}" loading="lazy" draggable="false">
+                                        <img src="{{ media_asset($partner->pathInView()) }}" alt="{{ $partner->title ?? '' }}" loading="lazy" draggable="false">
                                     </div>
                                 @endif
                             </div>

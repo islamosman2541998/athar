@@ -22,7 +22,7 @@
             <div class="footer-col footer-col--brand">
                 <a class="brand footer-brand" href="{{ route('site.home') }}" aria-label="{{ __('athar.brand') }}">
                     @if($footerLogo)
-                        <img src="{{ asset($footerLogo) }}" alt="{{ __('athar.brand') }}">
+                        <img src="{{ media_asset($footerLogo) }}" alt="{{ __('athar.brand') }}">
                     @else
                         <span class="brand-fallback"><span class="brand-symbol">↗</span><span>{{ __('athar.brand') }}<small>{{ __('athar.tagline') }}</small></span></span>
                     @endif

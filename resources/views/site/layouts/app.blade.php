@@ -9,11 +9,14 @@
     <link rel="canonical" href="{{ url()->current() }}">
     @php($siteIcon = \App\Settings\SettingSingleton::getInstance()->getItem('icon'))
     @if($siteIcon)
-        <link rel="icon" type="image/png" href="{{ asset($siteIcon) }}">
-        <link rel="apple-touch-icon" href="{{ asset($siteIcon) }}">
+        <link rel="icon" type="image/png" href="{{ media_asset($siteIcon) }}">
+        <link rel="apple-touch-icon" href="{{ media_asset($siteIcon) }}">
     @endif
-    <link rel="preload" as="image" href="{{ asset('site/images/athar-hero.png') }}">
-    <link rel="stylesheet" href="{{ asset('site/css/athar.css') }}?v=1.7.3">
+    {{-- Preload only the image the page actually paints first (set by the page, e.g. the first hero slide). --}}
+    @isset($lcpImage)
+        <link rel="preload" as="image" href="{{ $lcpImage }}" fetchpriority="high">
+    @endisset
+    <link rel="stylesheet" href="{{ asset('site/css/athar.min.css') }}?v=1.8.0">
     @include('includes.font-styles', ['scope' => 'site'])
     @stack('head')
 </head>
@@ -22,7 +25,7 @@
     <main>@yield('content')</main>
     @include('site.includes.cta')
     @include('site.includes.footer')
-    <script src="{{ asset('site/js/athar.js') }}?v=1.7.3" defer></script>
+    <script src="{{ asset('site/js/athar.min.js') }}?v=1.8.0" defer></script>
     @stack('scripts')
 </body>
 </html>

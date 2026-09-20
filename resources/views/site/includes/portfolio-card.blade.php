@@ -9,10 +9,10 @@
     $portfolioUrl = route('site.portfolio.show', $portfolioTrans->slug ?? $portfolio->id);
     $portfolioTitle = $portfolioTrans->title ?? __('athar.fallback.portfolio');
     // Covers come from the video itself: a YouTube thumbnail, or a still frame (#t=0.5) of an uploaded file.
-    $videoFrame = !$isYoutube && $portfolioType === 'video' && $hasMedia ? asset($portfolioMedia) . '#t=0.5' : null;
+    $videoFrame = !$isYoutube && $portfolioType === 'video' && $hasMedia ? media_asset($portfolioMedia) . '#t=0.5' : null;
     $imageCover = $isYoutube
-        ? $portfolio->youtubeThumbnail()
-        : asset($portfolioType === 'image' && $hasMedia ? $portfolioMedia : '/site/images/athar-devices.png');
+        ? $portfolio->youtubeThumbnail('hqdefault') // cards are small: no need for the 1280px cover
+        : media_asset($portfolioType === 'image' && $hasMedia ? $portfolioMedia : '/site/images/athar-devices.png');
     $playable = $isYoutube || ($portfolioType === 'video' && $hasMedia) || ($portfolioType === 'pdf' && $hasMedia);
 @endphp
 
@@ -35,7 +35,7 @@
     @if($playable)
         @php
             $mediaKind = $isYoutube ? 'youtube' : $portfolioType;
-            $mediaSrc = $isYoutube ? $portfolio->youtubeEmbedUrl() : asset($portfolioMedia);
+            $mediaSrc = $isYoutube ? $portfolio->youtubeEmbedUrl() : media_asset($portfolioMedia);
         @endphp
         <button type="button" class="portfolio-media-action portfolio-media-action--{{ $portfolioType }}"
             data-media-open data-media-type="{{ $mediaKind }}" data-media-src="{{ $mediaSrc }}"

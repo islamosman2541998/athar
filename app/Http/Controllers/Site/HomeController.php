@@ -63,7 +63,14 @@ class HomeController extends Controller
             ->get()
             ->values();
 
+        // Preload the image the hero paints first, so the browser fetches it immediately.
+        $firstSlider = $data['sliders']->first();
+        $lcpImage = $firstSlider
+            ? media_asset($firstSlider->pathInView())
+            : media_asset('site/images/athar-hero.png');
+
         return view('site.pages.index', array_merge($data, [
+            'lcpImage'     => $lcpImage,
             'current_lang' => $current_lang,
             'page_name'    => $page_name,
             'portfolios'   => $portfolios,

@@ -8,7 +8,7 @@
     <div class="container nav">
         <a class="brand" href="{{ route('site.home') }}" aria-label="{{ __('athar.brand') }}">
             @if($logo)
-                <img src="{{ asset($logo) }}" alt="{{ __('athar.brand') }}">
+                <img src="{{ media_asset($logo) }}" width="116" height="64" fetchpriority="high" alt="{{ __('athar.brand') }}">
             @else
                 <span class="brand-fallback"><span class="brand-symbol">↗</span><span>{{ __('athar.brand') }}<small>{{ __('athar.tagline') }}</small></span></span>
             @endif

@@ -1,7 +1,7 @@
 @extends('site.layouts.app')
 @section('title', __('athar.portfolio.title'))
 @section('content')
-@include('site.includes.page-hero',['title'=>__('athar.portfolio.title'),'kicker'=>__('athar.portfolio.kicker'),'intro'=>__('athar.portfolio.intro'),'image'=>asset('site/images/athar-devices.png')])
+@include('site.includes.page-hero',['title'=>__('athar.portfolio.title'),'kicker'=>__('athar.portfolio.kicker'),'intro'=>__('athar.portfolio.intro'),'image'=>media_asset('site/images/athar-devices.png')])
 <section class="section">
     <div class="container">
         @if($tags->count())

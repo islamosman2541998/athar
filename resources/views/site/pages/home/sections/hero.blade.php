@@ -9,7 +9,7 @@
                 ? \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeURL($slider->url)
                 : route('site.service_request.index');
         @endphp
-        <article class="hero hero-slide {{ $slider->mobile_image ? 'has-mobile-image' : '' }} {{ $loop->first ? 'is-active' : '' }}" style="--hero-desktop-image:url('{{ asset($slideImage) }}');--hero-mobile-image:url('{{ asset($slideMobileImage) }}')" aria-hidden="{{ $loop->first ? 'false' : 'true' }}">
+        <article class="hero hero-slide {{ $slider->mobile_image ? 'has-mobile-image' : '' }} {{ $loop->first ? 'is-active' : '' }}" style="--hero-desktop-image:url('{{ media_asset($slideImage) }}');--hero-mobile-image:url('{{ media_asset($slideMobileImage) }}')" aria-hidden="{{ $loop->first ? 'false' : 'true' }}">
             @if($slideVideo)
                 <video class="hero-media" autoplay muted loop playsinline preload="metadata"><source src="{{ asset($slideVideo) }}"></video>
             @endif
@@ -25,7 +25,7 @@
             </div>
         </article>
     @empty
-        <article class="hero hero-slide is-active" style="--hero-desktop-image:url('{{ asset('site/images/athar-hero.png') }}');--hero-mobile-image:var(--hero-desktop-image)">
+        <article class="hero hero-slide is-active" style="--hero-desktop-image:url('{{ media_asset('site/images/athar-hero.png') }}');--hero-mobile-image:var(--hero-desktop-image)">
             <div class="container">
                 <div class="hero-content">
                     <span class="hero-kicker">{{ __('athar.home.kicker') }}</span>
