@@ -15,7 +15,7 @@ class Portfolios extends Model
     protected $fillable = [
         'tag_id',
         'image',
-        'poster',
+        'video_url',
         'link',
         'sort',
         'status',
@@ -167,22 +167,63 @@ public function pathInView()
     return '/attachments/no_image/no_image.png';
 }
 
-public function posterInView(): string
-{
-    if ($this->poster) {
-        $candidates = [
-            ltrim($this->poster, '/'),
-            ltrim($this->path() . $this->poster, '/'),
-            'storage/attachments/portfolio/' . ltrim($this->poster, '/'),
-        ];
+    // YouTube ----------------------------------------------------------------------------------
 
-        foreach ($candidates as $candidate) {
-            if (file_exists(public_path($candidate))) {
-                return '/' . $candidate;
-            }
-        }
+    /** The YouTube link of the project: the dedicated field, or the project link when it points to YouTube. */
+    public function youtubeSource(): ?string
+    {
+        return $this->video_url ?: $this->link;
     }
 
-    return '/attachments/no_image/no_image.png';
-}
+    /** Video id when the project uses a YouTube link instead of an uploaded file. */
+    public function youtubeId(): ?string
+    {
+        $source = $this->youtubeSource();
+        if (!$source) {
+            return null;
+        }
+
+        preg_match(
+            '~(?:youtube\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/|live/|v/)|youtu\.be/)([A-Za-z0-9_-]{11})~i',
+            $source,
+            $matches
+        );
+
+        return $matches[1] ?? null;
+    }
+
+    public function isYoutube(): bool
+    {
+        return $this->youtubeId() !== null;
+    }
+
+    /** Vertical YouTube Shorts need a portrait player. */
+    public function isYoutubeShort(): bool
+    {
+        return $this->isYoutube() && str_contains(strtolower((string) $this->youtubeSource()), '/shorts/');
+    }
+
+    /** Public watch page, for the "watch on YouTube" button. */
+    public function youtubeWatchUrl(): ?string
+    {
+        $id = $this->youtubeId();
+
+        return $id ? 'https://www.youtube.com/watch?v=' . $id : null;
+    }
+
+    /** Embed URL played inside the site (never sends the visitor to YouTube). */
+    public function youtubeEmbedUrl(): ?string
+    {
+        $id = $this->youtubeId();
+
+        return $id ? 'https://www.youtube-nocookie.com/embed/' . $id . '?rel=0&modestbranding=1&playsinline=1' : null;
+    }
+
+    /** Cover image taken from the YouTube video itself. */
+    public function youtubeThumbnail(string $quality = 'maxresdefault'): ?string
+    {
+        $id = $this->youtubeId();
+
+        return $id ? 'https://i.ytimg.com/vi/' . $id . '/' . $quality . '.jpg' : null;
+    }
 }

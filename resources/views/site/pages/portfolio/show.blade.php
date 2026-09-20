@@ -2,10 +2,13 @@
 @php
     $trans = $portfolio->transNow;
     $mainMedia = $portfolio->pathInView();
-    $mainPoster = $portfolio->posterInView();
+    $hasMainMedia = $mainMedia !== '/attachments/no_image/no_image.png';
     $gallery = $portfolio->galleryMedia ?? collect();
     $mediaCount = 1 + $gallery->count();
     $title = $trans->title ?? __('athar.fallback.portfolio');
+    // Videos preview a still frame from the file itself (#t=0.5) instead of an uploaded cover.
+    $frame = fn (string $url) => $url . '#t=0.5';
+    $isYoutube = $portfolio->isYoutube();
 @endphp
 @section('title', $trans->meta_title ?? $title)
 @section('meta_description', strip_tags($trans->meta_description ?? $trans->description ?? __('athar.portfolio.intro')))
@@ -14,7 +17,9 @@
     'title' => $title,
     'kicker' => optional(optional($portfolio->tag)->transNow)->title ?? __('athar.portfolio.kicker'),
     'intro' => \Illuminate\Support\Str::limit(strip_tags($trans->description ?? ''), 190),
-    'image' => $portfolio->type === 'image' ? asset($mainMedia) : asset($mainPoster !== '/attachments/no_image/no_image.png' ? $mainPoster : 'site/images/athar-devices.png'),
+    'image' => $isYoutube
+        ? $portfolio->youtubeThumbnail()
+        : asset($portfolio->type === 'image' && $hasMainMedia ? $mainMedia : 'site/images/athar-devices.png'),
 ])
 
 <section class="section">
@@ -24,15 +29,20 @@
             <div class="rich-text">{!! $trans->description ?? '' !!}</div>
         </div>
 
-        <div class="project-media-carousel" data-project-carousel data-reveal aria-label="{{ app()->getLocale() === 'ar' ? 'معرض المشروع' : 'Project gallery' }}">
-            <div class="project-media-stage">
+        <div class="project-media-carousel" data-project-carousel data-reveal aria-label="{{ __('athar.media.gallery') }}">
+            <div class="project-media-stage {{ $portfolio->isYoutubeShort() ? 'project-media-stage--portrait' : '' }}">
                 <article class="project-media-slide is-active" data-project-slide aria-hidden="false">
-                    @if($portfolio->type === 'video')
-                        <video controls playsinline preload="metadata" poster="{{ $mainPoster !== '/attachments/no_image/no_image.png' ? asset($mainPoster) : '' }}" data-project-video data-src="{{ asset($mainMedia) }}"></video>
+                    @if($isYoutube)
+                        <iframe class="project-media-embed" data-project-embed data-src="{{ $portfolio->youtubeEmbedUrl() }}"
+                            title="{{ $title }}" loading="lazy" allowfullscreen
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                    @elseif($portfolio->type === 'video')
+                        <video controls playsinline preload="metadata" data-project-video data-src="{{ $frame(asset($mainMedia)) }}"></video>
                     @elseif($portfolio->type === 'pdf')
-                        <div class="project-document-stage" @if($mainPoster !== '/attachments/no_image/no_image.png') style="background-image:linear-gradient(rgba(5,28,24,.55),rgba(5,28,24,.82)),url('{{ asset($mainPoster) }}')" @endif>
-                            <span>PDF</span><strong>{{ app()->getLocale() === 'ar' ? 'ملف المشروع الرئيسي' : 'Main project document' }}</strong>
-                            <a class="btn btn--gold" href="{{ asset($mainMedia) }}" target="_blank" rel="noopener">{{ app()->getLocale() === 'ar' ? 'فتح الملف' : 'Open document' }}</a>
+                        <div class="project-document-stage">
+                            <span>PDF</span><strong>{{ __('athar.media.main_document') }}</strong>
+                            <a class="btn btn--gold" href="{{ asset($mainMedia) }}" target="_blank" rel="noopener">{{ __('athar.media.open_file') }}</a>
                         </div>
                     @else
                         <img src="{{ asset($mainMedia) }}" alt="{{ $title }}" fetchpriority="high">
@@ -48,9 +58,9 @@
                     @endphp
                     <article class="project-media-slide" data-project-slide aria-hidden="true">
                         @if($mediaType === 'video')
-                            <video controls playsinline preload="none" data-project-video data-src="{{ $mediaUrl }}"></video>
+                            <video controls playsinline preload="none" data-project-video data-src="{{ $frame($mediaUrl) }}"></video>
                         @elseif($mediaType === 'pdf')
-                            <div class="project-document-stage"><span>PDF</span><strong>{{ basename($media->image) }}</strong><a class="btn btn--gold" href="{{ $mediaUrl }}" target="_blank" rel="noopener">{{ app()->getLocale() === 'ar' ? 'فتح الملف' : 'Open document' }}</a></div>
+                            <div class="project-document-stage"><span>PDF</span><strong>{{ basename($media->image) }}</strong><a class="btn btn--gold" href="{{ $mediaUrl }}" target="_blank" rel="noopener">{{ __('athar.media.open_file') }}</a></div>
                         @else
                             <img src="{{ $mediaUrl }}" alt="{{ $title }} — {{ $loop->iteration + 1 }}" loading="lazy" decoding="async">
                         @endif
@@ -58,20 +68,24 @@
                 @endforeach
 
                 @if($mediaCount > 1)
-                    <button class="project-carousel-arrow project-carousel-arrow--prev" type="button" data-project-prev aria-label="{{ app()->getLocale() === 'ar' ? 'السابق' : 'Previous' }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
-                    <button class="project-carousel-arrow project-carousel-arrow--next" type="button" data-project-next aria-label="{{ app()->getLocale() === 'ar' ? 'التالي' : 'Next' }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+                    <button class="project-carousel-arrow project-carousel-arrow--prev" type="button" data-project-prev aria-label="{{ __('athar.previous') }}">@include('site.includes.icon', ['name' => 'chevron-left', 'class' => ''])</button>
+                    <button class="project-carousel-arrow project-carousel-arrow--next" type="button" data-project-next aria-label="{{ __('athar.next') }}">@include('site.includes.icon', ['name' => 'chevron-right', 'class' => ''])</button>
                 @endif
             </div>
 
             @if($mediaCount > 1)
                 <div class="project-media-thumbs" role="tablist">
                     <button class="project-media-thumb is-active" type="button" data-project-thumb="0" aria-selected="true">
-                        @if($portfolio->type === 'image')
+                        @if($isYoutube)
+                            <img src="{{ $portfolio->youtubeThumbnail('hqdefault') }}" alt="">
+                            <span class="thumb-type">@include('site.includes.icon', ['name' => 'play', 'class' => ''])</span>
+                        @elseif($portfolio->type === 'image')
                             <img src="{{ asset($mainMedia) }}" alt="">
-                        @elseif($mainPoster !== '/attachments/no_image/no_image.png')
-                            <img src="{{ asset($mainPoster) }}" alt=""><span class="thumb-type">{{ $portfolio->type === 'video' ? '▶' : 'PDF' }}</span>
+                        @elseif($portfolio->type === 'video' && $hasMainMedia)
+                            <video src="{{ $frame(asset($mainMedia)) }}" muted playsinline preload="metadata" tabindex="-1" aria-hidden="true"></video>
+                            <span class="thumb-type">@include('site.includes.icon', ['name' => 'play', 'class' => ''])</span>
                         @else
-                            <span class="thumb-placeholder">{{ $portfolio->type === 'video' ? '▶' : 'PDF' }}</span>
+                            <span class="thumb-placeholder">PDF</span>
                         @endif
                     </button>
                     @foreach($gallery as $media)
@@ -80,17 +94,31 @@
                             $thumbUrl = asset($media->pathInView('portfolios'));
                         @endphp
                         <button class="project-media-thumb" type="button" data-project-thumb="{{ $loop->iteration }}" aria-selected="false">
-                            @if($thumbType === 'image')<img src="{{ $thumbUrl }}" alt="" loading="lazy">
-                            @else<span class="thumb-placeholder">{{ $thumbType === 'video' ? '▶' : 'PDF' }}</span>@endif
+                            @if($thumbType === 'image')
+                                <img src="{{ $thumbUrl }}" alt="" loading="lazy">
+                            @elseif($thumbType === 'video')
+                                <video src="{{ $frame($thumbUrl) }}" muted playsinline preload="metadata" tabindex="-1" aria-hidden="true"></video>
+                                <span class="thumb-type">@include('site.includes.icon', ['name' => 'play', 'class' => ''])</span>
+                            @else
+                                <span class="thumb-placeholder">PDF</span>
+                            @endif
                         </button>
                     @endforeach
                 </div>
             @endif
         </div>
 
-        @if($portfolio->link && !str_starts_with($portfolio->link, '#'))
-            <div class="section-action"><a class="btn btn--green" href="{{ $portfolio->link }}" target="_blank" rel="noopener">{{ app()->getLocale()==='ar' ? 'زيارة المشروع' : 'Visit project' }}</a></div>
-        @endif
+        <div class="section-action">
+            @if($isYoutube)
+                <a class="btn btn--green btn--youtube" href="{{ $portfolio->youtubeWatchUrl() }}" target="_blank" rel="noopener">
+                    @include('site.includes.icon', ['name' => 'youtube', 'class' => ''])
+                    {{ __('athar.media.watch_on_youtube') }}
+                </a>
+            @endif
+            @if($portfolio->link && !str_starts_with($portfolio->link, '#') && $portfolio->link !== $portfolio->youtubeSource())
+                <a class="btn btn--green" href="{{ $portfolio->link }}" target="_blank" rel="noopener">{{ app()->getLocale()==='ar' ? 'زيارة المشروع' : 'Visit project' }}</a>
+            @endif
+        </div>
     </div>
 </section>
 

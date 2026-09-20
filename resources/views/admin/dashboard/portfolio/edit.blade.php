@@ -154,18 +154,17 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-12" id="portfolio-poster-field">
+                                                        {{-- youtube link ------------------------------------------------------------------------------- --}}
+                                                        <div class="col-12" id="portfolio-video-url-field">
                                                             <div class="row mb-3">
-                                                                <label for="portfolio-poster" col-form-label>
-                                                                    {{ $current_lang === 'ar' ? 'بوستر الغلاف' : 'Cover poster' }}:</label>
+                                                                <label for="portfolio-video-url" col-form-label>
+                                                                    {{ $current_lang === 'ar' ? 'رابط فيديو يوتيوب' : 'YouTube video link' }}:</label>
                                                                 <div class="col-sm-12">
-                                                                    @if($portfolio->poster)
-                                                                        <img src="{{ asset($portfolio->posterInView()) }}" alt="" class="img-thumbnail mb-2" style="max-height:180px">
-                                                                    @endif
-                                                                    <input class="form-control" type="file" id="portfolio-poster"
-                                                                        name="poster" accept="image/jpeg,image/png,image/webp">
-                                                                    <small class="text-muted">{{ $current_lang === 'ar' ? 'مطلوب للفيديو وPDF، ويظهر على الكارد وقبل فتح الملف.' : 'Required for video and PDF and shown on cards before opening the file.' }}</small>
-                                                                    @error('poster')
+                                                                    <input class="form-control" type="url" id="portfolio-video-url" name="video_url"
+                                                                        placeholder="https://www.youtube.com/watch?v=..."
+                                                                        value="{{ old('video_url', $portfolio->video_url) }}">
+                                                                    <small class="text-muted">{{ $current_lang === 'ar' ? 'ضع رابط الفيديو من يوتيوب ليُعرض داخل الموقع ويؤخذ الغلاف منه، وعندها لا داعي لرفع ملف فيديو.' : 'Paste a YouTube link to play the video inside the site and take its cover from it; no video file upload needed.' }}</small>
+                                                                    @error('video_url')
                                                                         <span class="text-danger d-block">{{ $message }}</span>
                                                                     @enderror
                                                                 </div>
@@ -472,14 +471,13 @@
         document.addEventListener('DOMContentLoaded', () => {
         const portfolioType = document.getElementById('portfolio-media-type');
         const portfolioMedia = document.getElementById('portfolio-main-media');
-        const portfolioPoster = document.getElementById('portfolio-poster');
         const portfolioMediaHelp = document.getElementById('portfolio-media-help');
         const originalPortfolioType = @json($portfolio->type);
-        const hasPortfolioPoster = @json((bool) $portfolio->poster);
+        const portfolioVideoUrl = document.getElementById('portfolio-video-url');
+        const portfolioVideoUrlField = document.getElementById('portfolio-video-url-field');
 
         function syncPortfolioMediaFields() {
             const type = portfolioType?.value;
-            const needsPoster = type === 'video' || type === 'pdf';
             const accepts = {
                 image: 'image/jpeg,image/png,image/gif,image/webp,image/svg+xml',
                 video: 'video/mp4,video/quicktime,video/webm,.avi,.mkv',
@@ -488,9 +486,12 @@
 
             if (portfolioMedia) {
                 portfolioMedia.accept = accepts[type] || 'image/*,video/*,application/pdf';
-                portfolioMedia.required = Boolean(type && type !== originalPortfolioType);
+                // The YouTube link is an alternative to uploading a video file.
+                const usesYoutube = type === 'video' && Boolean(portfolioVideoUrl?.value.trim());
+                portfolioMedia.required = !usesYoutube && Boolean(type && type !== originalPortfolioType);
             }
-            if (portfolioPoster) portfolioPoster.required = needsPoster && (!hasPortfolioPoster || type !== originalPortfolioType);
+            if (portfolioVideoUrlField) portfolioVideoUrlField.hidden = type !== 'video';
+            if (portfolioVideoUrl && type !== 'video') portfolioVideoUrl.value = '';
             if (portfolioMediaHelp) {
                 portfolioMediaHelp.textContent = type !== originalPortfolioType
                     ? @json($current_lang === 'ar' ? 'لتغيير النوع يجب رفع ملف رئيسي مطابق.' : 'Upload a matching main file when changing the type.')
@@ -499,6 +500,7 @@
         }
 
         portfolioType?.addEventListener('change', syncPortfolioMediaFields);
+        portfolioVideoUrl?.addEventListener('input', syncPortfolioMediaFields);
         syncPortfolioMediaFields();
         });
 

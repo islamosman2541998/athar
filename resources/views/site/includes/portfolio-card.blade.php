@@ -1,19 +1,29 @@
 @php
     $portfolioTrans = $portfolio->transNow;
-    $portfolioType = in_array($portfolio->type, ['image', 'video', 'pdf'], true) ? $portfolio->type : 'image';
+    $isYoutube = $portfolio->isYoutube();
+    $portfolioType = $isYoutube
+        ? 'video'
+        : (in_array($portfolio->type, ['image', 'video', 'pdf'], true) ? $portfolio->type : 'image');
     $portfolioMedia = $portfolio->pathInView();
-    $portfolioPoster = $portfolio->posterInView();
-    $portfolioCover = $portfolioType === 'image' ? $portfolioMedia : $portfolioPoster;
-    $portfolioCover = $portfolioCover !== '/attachments/no_image/no_image.png'
-        ? $portfolioCover
-        : '/site/images/athar-devices.png';
+    $hasMedia = $portfolioMedia !== '/attachments/no_image/no_image.png';
     $portfolioUrl = route('site.portfolio.show', $portfolioTrans->slug ?? $portfolio->id);
     $portfolioTitle = $portfolioTrans->title ?? __('athar.fallback.portfolio');
+    // Covers come from the video itself: a YouTube thumbnail, or a still frame (#t=0.5) of an uploaded file.
+    $videoFrame = !$isYoutube && $portfolioType === 'video' && $hasMedia ? asset($portfolioMedia) . '#t=0.5' : null;
+    $imageCover = $isYoutube
+        ? $portfolio->youtubeThumbnail()
+        : asset($portfolioType === 'image' && $hasMedia ? $portfolioMedia : '/site/images/athar-devices.png');
+    $playable = $isYoutube || ($portfolioType === 'video' && $hasMedia) || ($portfolioType === 'pdf' && $hasMedia);
 @endphp
 
-<article class="portfolio-showcase-card" data-category="{{ $portfolio->tag_id }}" data-reveal>
+<article class="portfolio-showcase-card portfolio-showcase-card--{{ $portfolioType }}" data-category="{{ $portfolio->tag_id }}" data-reveal>
     <a class="portfolio-card-detail" href="{{ $portfolioUrl }}" aria-label="{{ $portfolioTitle }}">
-        <img src="{{ asset($portfolioCover) }}" alt="{{ $portfolioTitle }}" loading="lazy" decoding="async">
+        @if($videoFrame)
+            <video class="portfolio-card-media" src="{{ $videoFrame }}" muted playsinline preload="metadata" tabindex="-1" aria-hidden="true"></video>
+        @else
+            <img class="portfolio-card-media" src="{{ $imageCover }}" alt="{{ $portfolioTitle }}" loading="lazy" decoding="async"
+                @if($isYoutube) onerror="this.onerror=null;this.src='{{ $portfolio->youtubeThumbnail('hqdefault') }}'" @endif>
+        @endif
         <span class="portfolio-card-shade"></span>
         <span class="portfolio-card-copy">
             <small>{{ optional(optional($portfolio->tag)->transNow)->title ?? __('athar.nav.work') }}</small>
@@ -22,11 +32,19 @@
         </span>
     </a>
 
-    @if(in_array($portfolioType, ['video', 'pdf'], true) && $portfolioMedia !== '/attachments/no_image/no_image.png')
+    @if($playable)
+        @php
+            $mediaKind = $isYoutube ? 'youtube' : $portfolioType;
+            $mediaSrc = $isYoutube ? $portfolio->youtubeEmbedUrl() : asset($portfolioMedia);
+        @endphp
         <button type="button" class="portfolio-media-action portfolio-media-action--{{ $portfolioType }}"
-            data-media-open data-media-type="{{ $portfolioType }}" data-media-src="{{ asset($portfolioMedia) }}"
-            aria-label="{{ $portfolioType === 'video' ? (app()->getLocale() === 'ar' ? 'تشغيل الفيديو' : 'Play video') : (app()->getLocale() === 'ar' ? 'فتح ملف PDF' : 'Open PDF') }}">
-            <span>{{ $portfolioType === 'video' ? '▶' : 'PDF' }}</span>
+            data-media-open data-media-type="{{ $mediaKind }}" data-media-src="{{ $mediaSrc }}"
+            aria-label="{{ $portfolioType === 'pdf' ? __('athar.media.open_pdf') : __('athar.media.play') }}">
+            @if($portfolioType === 'pdf')
+                <span>PDF</span>
+            @else
+                @include('site.includes.icon', ['name' => 'play', 'class' => ''])
+            @endif
         </button>
     @endif
 </article>

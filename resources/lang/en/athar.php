@@ -5,6 +5,7 @@ return [
     'tagline' => 'We create your digital impact',
     'nav' => ['home'=>'Home','services'=>'Services','work'=>'Work','blog'=>'Insights','about'=>'About','contact'=>'Contact','jobs'=>'Careers','profile'=>'Profile'],
     'request' => 'Request a service', 'start' => 'Start your project', 'more' => 'Learn more', 'all' => 'View all', 'previous' => 'Previous', 'next' => 'Next',
+    'media' => ['play'=>'Play video','open_pdf'=>'Open PDF','gallery'=>'Project gallery','open_file'=>'Open document','main_document'=>'Main project document','watch_on_youtube'=>'Watch on YouTube'],
     'pagination' => ['label'=>'Pagination','page'=>'Page :page','summary'=>'Showing :from - :to of :total'],
     'home' => [
         'kicker'=>'Creative thinking. Real growth.', 'title'=>'We create your digital <em>impact</em>',

@@ -28,6 +28,7 @@ class PortfolioRequest extends FormRequest
         }
         $attr += ['tag_id' => 'Tag'];
         $attr += ['image' => 'Image'];
+        $attr += ['video_url' => 'YouTube link'];
         $attr += ['sort' => 'Sort'];
         $attr += ['feature' => 'Fearure'];
         $attr += ['news_ticker' => 'News Ticker'];
@@ -40,11 +41,13 @@ class PortfolioRequest extends FormRequest
         $req = [];
         $portfolio = $this->route('portfolio');
         $selectedType = $this->input('type');
-        $mediaRequired = $this->isMethod('POST')
+        // A YouTube link replaces the uploaded video file.
+        $hasVideoUrl = $selectedType === 'video' && filled($this->input('video_url'));
+        $mediaRequired = !$hasVideoUrl && (
+            $this->isMethod('POST')
             || !$portfolio?->image
-            || ($portfolio && $portfolio->type !== $selectedType);
-        $posterRequired = in_array($selectedType, ['video', 'pdf'], true)
-            && (!$portfolio?->poster || ($portfolio && $portfolio->type !== $selectedType));
+            || ($portfolio && $portfolio->type !== $selectedType)
+        );
         $mediaMimes = match ($selectedType) {
             'image' => 'jpg,jpeg,png,gif,webp,svg',
             'video' => 'mp4,mov,avi,mkv,webm',
@@ -61,7 +64,7 @@ class PortfolioRequest extends FormRequest
             $req += [$locale . '.meta_key' => 'nullable'];
         }
         $req += ['image' => [Rule::requiredIf($mediaRequired), 'nullable', 'file', 'mimes:' . $mediaMimes, 'max:90000480']];
-        $req += ['poster' => [Rule::requiredIf($posterRequired), 'nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240']];
+        $req += ['video_url' => ['nullable', 'url', 'regex:~(youtube\.com|youtu\.be)~i']];
         $req += ['tag_id' => 'required'];
         $req += ['link' => 'nullable'];
         $req += ['status' => 'nullable'];

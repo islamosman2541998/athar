@@ -13,7 +13,7 @@
         <link rel="apple-touch-icon" href="{{ asset($siteIcon) }}">
     @endif
     <link rel="preload" as="image" href="{{ asset('site/images/athar-hero.png') }}">
-    <link rel="stylesheet" href="{{ asset('site/css/athar.css') }}?v=1.6.7">
+    <link rel="stylesheet" href="{{ asset('site/css/athar.css') }}?v=1.7.3">
     @include('includes.font-styles', ['scope' => 'site'])
     @stack('head')
 </head>
@@ -22,7 +22,7 @@
     <main>@yield('content')</main>
     @include('site.includes.cta')
     @include('site.includes.footer')
-    <script src="{{ asset('site/js/athar.js') }}?v=1.6.7" defer></script>
+    <script src="{{ asset('site/js/athar.js') }}?v=1.7.3" defer></script>
     @stack('scripts')
 </body>
 </html>

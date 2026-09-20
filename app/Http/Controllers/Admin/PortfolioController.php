@@ -61,14 +61,11 @@ class PortfolioController extends Controller
     public function store(PortfolioRequest $request)
     {
         $data = $request->getSanitized();
-        unset($data['image'], $data['poster']);
+        unset($data['image']);
+        $data['video_url'] = $request->type === 'video' ? $request->input('video_url') : null;
 
         if ($request->hasFile('image')) {
             $data['image'] = $this->upload_file($request->file('image'), 'portfolio');
-        }
-
-        if (in_array($request->type, ['video', 'pdf'], true) && $request->hasFile('poster')) {
-            $data['poster'] = $this->upload_file($request->file('poster'), 'portfolio/posters');
         }
 
         $portfolio = Portfolios::create($data);
@@ -141,19 +138,12 @@ class PortfolioController extends Controller
     public function update(PortfolioRequest $request, Portfolios $portfolio)
     {
         $data = $request->getSanitized();
-        unset($data['image'], $data['poster']);
+        unset($data['image']);
+        $data['video_url'] = $request->type === 'video' ? $request->input('video_url') : null;
 
         if ($request->hasFile('image')) {
             $this->deletePublicFile($portfolio->image);
             $data['image'] = $this->upload_file($request->file('image'), 'portfolio');
-        }
-
-        if ($request->type === 'image') {
-            $this->deletePublicFile($portfolio->poster);
-            $data['poster'] = null;
-        } elseif ($request->hasFile('poster')) {
-            $this->deletePublicFile($portfolio->poster);
-            $data['poster'] = $this->upload_file($request->file('poster'), 'portfolio/posters');
         }
 
         $portfolio->update($data);
@@ -224,7 +214,6 @@ class PortfolioController extends Controller
     public function destroy(Portfolios $portfolio)
     {
         $this->deletePublicFile($portfolio->image);
-        $this->deletePublicFile($portfolio->poster);
         $portfolio->delete();
         session()->flash('success', trans('message.admin.deleted_sucessfully'));
         return redirect()->back();
@@ -305,7 +294,6 @@ class PortfolioController extends Controller
             $portfolios = Portfolios::findMany($request['record']);
             foreach ($portfolios as $portfolio) {
                 $this->deletePublicFile($portfolio->image);
-                $this->deletePublicFile($portfolio->poster);
                 $portfolio->delete();
             }
             session()->flash('success', trans('pages.delete_all_sucessfully'));

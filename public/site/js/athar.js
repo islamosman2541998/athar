@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const mediaViewer = document.querySelector('[data-media-viewer]');
   const viewerVideo = mediaViewer?.querySelector('[data-media-video]');
   const viewerPdf = mediaViewer?.querySelector('[data-media-pdf]');
+  const viewerEmbed = mediaViewer?.querySelector('[data-media-embed]');
   const closeMediaViewer = () => {
     if (!mediaViewer) return;
     viewerVideo?.pause();
@@ -87,23 +88,33 @@ document.addEventListener('DOMContentLoaded', () => {
       viewerPdf.removeAttribute('src');
       viewerPdf.hidden = true;
     }
+    if (viewerEmbed) {
+      // Clearing the src stops YouTube playback.
+      viewerEmbed.removeAttribute('src');
+      viewerEmbed.hidden = true;
+    }
     if (mediaViewer.open) mediaViewer.close();
   };
 
   document.querySelectorAll('[data-media-open]').forEach(button => {
     button.addEventListener('click', () => {
       if (!mediaViewer || !button.dataset.mediaSrc) return;
-      const isVideo = button.dataset.mediaType === 'video';
+      const type = button.dataset.mediaType;
+      const src = button.dataset.mediaSrc;
       if (viewerVideo) {
-        viewerVideo.hidden = !isVideo;
-        if (isVideo) viewerVideo.src = button.dataset.mediaSrc;
+        viewerVideo.hidden = type !== 'video';
+        if (type === 'video') viewerVideo.src = src;
       }
       if (viewerPdf) {
-        viewerPdf.hidden = isVideo;
-        if (!isVideo) viewerPdf.src = button.dataset.mediaSrc;
+        viewerPdf.hidden = type !== 'pdf';
+        if (type === 'pdf') viewerPdf.src = src;
+      }
+      if (viewerEmbed) {
+        viewerEmbed.hidden = type !== 'youtube';
+        if (type === 'youtube') viewerEmbed.src = src + (src.includes('?') ? '&' : '?') + 'autoplay=1';
       }
       mediaViewer.showModal();
-      if (isVideo) viewerVideo?.play().catch(() => {});
+      if (type === 'video') viewerVideo?.play().catch(() => {});
     });
   });
   mediaViewer?.querySelector('[data-media-close]')?.addEventListener('click', closeMediaViewer);
@@ -131,6 +142,9 @@ document.addEventListener('DOMContentLoaded', () => {
         video.src = video.dataset.src;
         video.load();
       }
+      // YouTube embeds load only once their slide is shown.
+      const embed = slide?.querySelector('[data-project-embed]');
+      if (embed && !embed.src && embed.dataset.src) embed.src = embed.dataset.src;
     };
     const show = index => {
       if (!slides.length) return;
@@ -139,7 +153,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const active = slideIndex === current;
         slide.classList.toggle('is-active', active);
         slide.setAttribute('aria-hidden', active ? 'false' : 'true');
-        if (!active) slide.querySelector('video')?.pause();
+        if (!active) {
+          slide.querySelector('video')?.pause();
+          // Clearing the embed src stops YouTube playback on hidden slides.
+          const hiddenEmbed = slide.querySelector('[data-project-embed]');
+          if (hiddenEmbed?.src) hiddenEmbed.removeAttribute('src');
+        }
       });
       hydrateVideo(slides[current]);
       thumbs.forEach((thumb, thumbIndex) => {
@@ -158,6 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const stop = () => window.clearInterval(timer);
     const start = () => {
       stop();
+      // Never auto-advance away from a playing YouTube embed.
+      if (slides[current]?.querySelector('[data-project-embed]')) return;
       if (slides.length > 1 && !reducedMotion) timer = window.setInterval(() => show(current + 1), 6000);
     };
     const go = index => { show(index); start(); };

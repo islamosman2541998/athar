@@ -184,20 +184,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-12" id="portfolio-poster-field">
-                                                            <div class="row mb-3">
-                                                                <label for="portfolio-poster" col-form-label>
-                                                                    {{ $current_lang === 'ar' ? 'بوستر الغلاف' : 'Cover poster' }}:</label>
-                                                                <div class="col-sm-12">
-                                                                    <input class="form-control" type="file" id="portfolio-poster"
-                                                                        name="poster" accept="image/jpeg,image/png,image/webp">
-                                                                    <small class="text-muted">{{ $current_lang === 'ar' ? 'مطلوب للفيديو وPDF، ويظهر قبل فتح الملف. JPG أو PNG أو WebP.' : 'Required for video and PDF and shown before opening the file. JPG, PNG or WebP.' }}</small>
-                                                                    @error('poster')
-                                                                        <span class="text-danger d-block">{{ $message }}</span>
-                                                                    @enderror
-                                                                </div>
-                                                            </div>
-                                                        </div>
                                                         {{-- sort ------------------------------------------------------------------------------------- --}}
                                                         <div class="col-12">
                                                             <div class="row mb-3">
@@ -207,6 +193,22 @@
                                                                     <input class="form-control" type="number"
                                                                         id="example-number-input" name="sort"
                                                                         value="{{ old('sort') }}">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {{-- youtube link ------------------------------------------------------------------------------- --}}
+                                                        <div class="col-12" id="portfolio-video-url-field">
+                                                            <div class="row mb-3">
+                                                                <label for="portfolio-video-url" col-form-label>
+                                                                    {{ $current_lang === 'ar' ? 'رابط فيديو يوتيوب' : 'YouTube video link' }}:</label>
+                                                                <div class="col-sm-12">
+                                                                    <input class="form-control" type="url" id="portfolio-video-url" name="video_url"
+                                                                        placeholder="https://www.youtube.com/watch?v=..."
+                                                                        value="{{ old('video_url') }}">
+                                                                    <small class="text-muted">{{ $current_lang === 'ar' ? 'ضع رابط الفيديو من يوتيوب ليُعرض داخل الموقع ويؤخذ الغلاف منه، وعندها لا داعي لرفع ملف فيديو.' : 'Paste a YouTube link to play the video inside the site and take its cover from it; no video file upload needed.' }}</small>
+                                                                    @error('video_url')
+                                                                        <span class="text-danger d-block">{{ $message }}</span>
+                                                                    @enderror
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -310,12 +312,17 @@
         document.addEventListener('DOMContentLoaded', () => {
         const portfolioType = document.getElementById('portfolio-media-type');
         const portfolioMedia = document.getElementById('portfolio-main-media');
-        const portfolioPoster = document.getElementById('portfolio-poster');
         const portfolioMediaHelp = document.getElementById('portfolio-media-help');
+        const portfolioVideoUrl = document.getElementById('portfolio-video-url');
+        const portfolioVideoUrlField = document.getElementById('portfolio-video-url-field');
 
         function syncPortfolioMediaFields() {
             const type = portfolioType?.value;
-            const needsPoster = type === 'video' || type === 'pdf';
+            // The YouTube link is an alternative to uploading a video file.
+            const isVideo = type === 'video';
+            if (portfolioVideoUrlField) portfolioVideoUrlField.hidden = !isVideo;
+            if (portfolioVideoUrl && !isVideo) portfolioVideoUrl.value = '';
+            if (portfolioMedia) portfolioMedia.required = isVideo ? !portfolioVideoUrl?.value.trim() : true;
             const accepts = {
                 image: 'image/jpeg,image/png,image/gif,image/webp,image/svg+xml',
                 video: 'video/mp4,video/quicktime,video/webm,.avi,.mkv',
@@ -325,7 +332,6 @@
             if (portfolioMedia) {
                 portfolioMedia.accept = accepts[type] || 'image/*,video/*,application/pdf';
             }
-            if (portfolioPoster) portfolioPoster.required = needsPoster;
             if (portfolioMediaHelp) {
                 portfolioMediaHelp.textContent = type === 'image'
                     ? @json($current_lang === 'ar' ? 'ارفع صورة الغلاف الرئيسية.' : 'Upload the main cover image.')
@@ -338,6 +344,7 @@
         }
 
         portfolioType?.addEventListener('change', syncPortfolioMediaFields);
+        portfolioVideoUrl?.addEventListener('input', syncPortfolioMediaFields);
         syncPortfolioMediaFields();
         });
 
